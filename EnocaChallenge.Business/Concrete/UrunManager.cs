@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace EnocaChallenge.Business.Concrete
 {
-     public class UrunManager : IUrunService
+    public class UrunManager : IUrunService
     {
         private readonly IUrunDal _urunDal;
         private readonly IMapper _mapper;

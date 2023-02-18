@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EnocaChallenge.Business.Concrete
@@ -16,6 +17,7 @@ namespace EnocaChallenge.Business.Concrete
     {
         private readonly IFirmaDal _firmaDal;
         private readonly IMapper _mapper;
+        
 
         public FirmaManager(IFirmaDal firmaDal, IMapper mapper)
         {
@@ -25,6 +27,8 @@ namespace EnocaChallenge.Business.Concrete
 
         public string Add(FirmaVM firmaVm)
         {
+
+            if (TimeControl(firmaVm)) { return "Izin saatleri 00:00 formatinda olmali"; }
             var firma = _mapper.Map<Firma>(firmaVm);
             _firmaDal.Add(firma);
             return "Firma eklendi";
@@ -55,7 +59,7 @@ namespace EnocaChallenge.Business.Concrete
         {
             var firma = _firmaDal.Get(f => f.FirmaId == firmaVm.FirmaId);
             if (firma == null) { return "Firma Bulunamadi"; }
-
+            if (TimeControl(firmaVm)) { return "Izin saatleri 00:00 formatinda olmali"; }
             firma.FirmaAd = firmaVm.FirmaAd;
             firma.Onay = firmaVm.Onay;
             firma.SiparisIzinBaslangicSaat = TimeSpan
@@ -63,6 +67,13 @@ namespace EnocaChallenge.Business.Concrete
             firma.SiparisIzinBitisSaat = TimeSpan.Parse(firmaVm.SiparisIzinBitisSaat);
             _firmaDal.Update(firma);
             return "Guncelleme Yapildi";
+        }
+        bool TimeControl(FirmaVM firmaVm)
+        {
+            string pattern = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$";
+            Match m1 = Regex.Match(firmaVm.SiparisIzinBaslangicSaat, pattern);
+            Match m2 = Regex.Match(firmaVm.SiparisIzinBitisSaat, pattern);
+            return (!m1.Success || !m2.Success);
         }
     }
 }

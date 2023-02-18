@@ -12,6 +12,7 @@ namespace EnocaChallenge.Api.Controllers
         private readonly ISiparisService _siparisService;
         public SiparisController(ISiparisService siparisService)
         {
+           
             _siparisService = siparisService;
         }
         [HttpGet("GetAll")]
